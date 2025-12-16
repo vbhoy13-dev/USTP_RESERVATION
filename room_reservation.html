@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Room Reservation</title>
+    <style>
+        body { font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; margin: 0; background: #001122; color: #FFFFFF; }
+        .container { display: flex; width: 100%; }
+        .main-content { width: 600px; padding: 20px; text-align: center; }
+        .calendar { flex: 1; padding: 20px; margin-left: 20px; color: #FFD700; text-align: center; min-height: 500px; }
+        #calendar-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        #calendar-table th, #calendar-table td { padding: 15px; border: 1px solid #FFD700; text-align: center; background: rgba(0, 0, 0, 0.3); }
+        #calendar-table th { background: #FFD700; color: #000000; }
+        #calendar-table td.today { background: #FFD700; color: #000000; }
+        .time-selection { display: grid; grid-template-columns: max-content 200px; column-gap: 12px; row-gap: 12px; justify-content: center; align-items: center; margin-bottom: 20px; }
+        .time-selection label { font-weight: 500; text-align: right; }
+        .time-selection select, .time-selection input[type="date"] { padding: 8px 10px; border: 1px solid #666666; border-radius: 8px; background: #002244; color: #FFFFFF; width: 100%; min-width: 200px; }
+        #room-select { padding: 8px 10px; border: 1px solid #666666; border-radius: 8px; background: #002244; color: #FFFFFF; }
+        .reservation-info { background: #002244; padding: 10px; border-radius: 8px; margin-top: 20px; text-align: center; }
+        h1 { color: #FFD700; text-align: center; }
+        .tabs { display: flex; justify-content: center; margin-bottom: 20px; }
+        .tab-button { padding: 10px 20px; background: #002244; border: 1px solid #666666; cursor: pointer; color: #FFFFFF; }
+        .tab-button.active { background: #FFD700; color: #000000; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        table { margin: 0 auto; border-collapse: collapse; }
+        td { padding: 10px; border: 1px solid #666666; text-align: center; }
+        button { padding: 5px 10px; background: #FFD700; color: #000000; border: none; border-radius: 4px; cursor: pointer; transition: transform 0.3s ease; }
+        button:hover:not(:disabled) { transform: scale(1.05); }
+        button:disabled { opacity: 0.5; cursor: default; background: #666666; }
+        a { color: #FFD700; text-decoration: none; display: block; text-align: center; margin-top: 20px; }
+        .confirmation { text-align: center; padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-content">
+        <h1>Room Reservation</h1>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <label for="language-select">Language:</label>
+            <select id="language-select">
+                <option value="en">English</option>
+                <option value="tl">Tagalog</option>
+                <option value="ar">العربية</option>
+            </select>
+        </div>
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('select')">Select Room</button>
+            <button class="tab-button" onclick="showTab('confirm')">Confirmation</button>
+            <button class="tab-button" onclick="showTab('view')">View Reservations</button>
+        </div>
+        <div id="select" class="tab-content active">
+            <div class="time-selection">
+                <label for="reservation-date">Date:</label>
+                <input type="date" id="reservation-date" />
+                <label for="start-time">Start Time:</label>
+                <select id="start-time">
+                    <option value="">Choose start time</option>
+                    <option value="7:00 AM">7:00 AM</option>
+                    <option value="7:30 AM">7:30 AM</option>
+                    <option value="8:00 AM">8:00 AM</option>
+                    <option value="8:30 AM">8:30 AM</option>
+                    <option value="9:00 AM">9:00 AM</option>
+                    <option value="9:30 AM">9:30 AM</option>
+                    <option value="10:00 AM">10:00 AM</option>
+                    <option value="10:30 AM">10:30 AM</option>
+                    <option value="11:00 AM">11:00 AM</option>
+                    <option value="11:30 AM">11:30 AM</option>
+                    <option value="12:00 PM">12:00 PM</option>
+                    <option value="12:30 PM">12:30 PM</option>
+                    <option value="1:00 PM">1:00 PM</option>
+                    <option value="1:30 PM">1:30 PM</option>
+                    <option value="2:00 PM">2:00 PM</option>
+                    <option value="2:30 PM">2:30 PM</option>
+                    <option value="3:00 PM">3:00 PM</option>
+                    <option value="3:30 PM">3:30 PM</option>
+                    <option value="4:00 PM">4:00 PM</option>
+                    <option value="4:30 PM">4:30 PM</option>
+                    <option value="5:00 PM">5:00 PM</option>
+                    <option value="5:30 PM">5:30 PM</option>
+                    <option value="6:00 PM">6:00 PM</option>
+                    <option value="6:30 PM">6:30 PM</option>
+                    <option value="7:00 PM">7:00 PM</option>
+                    <option value="7:30 PM">7:30 PM</option>
+                    <option value="8:00 PM">8:00 PM</option>
+                    <option value="8:30 PM">8:30 PM</option>
+                    <option value="9:00 PM">9:00 PM</option>
+                </select>
+                <label for="end-time">End Time:</label>
+                <select id="end-time">
+                    <option value="">Choose end time</option>
+                    <option value="7:00 AM">7:00 AM</option>
+                    <option value="7:30 AM">7:30 AM</option>
+                    <option value="8:00 AM">8:00 AM</option>
+                    <option value="8:30 AM">8:30 AM</option>
+                    <option value="9:00 AM">9:00 AM</option>
+                    <option value="9:30 AM">9:30 AM</option>
+                    <option value="10:00 AM">10:00 AM</option>
+                    <option value="10:30 AM">10:30 AM</option>
+                    <option value="11:00 AM">11:00 AM</option>
+                    <option value="11:30 AM">11:30 AM</option>
+                    <option value="12:00 PM">12:00 PM</option>
+                    <option value="12:30 PM">12:30 PM</option>
+                    <option value="1:00 PM">1:00 PM</option>
+                    <option value="1:30 PM">1:30 PM</option>
+                    <option value="2:00 PM">2:00 PM</option>
+                    <option value="2:30 PM">2:30 PM</option>
+                    <option value="3:00 PM">3:00 PM</option>
+                    <option value="3:30 PM">3:30 PM</option>
+                    <option value="4:00 PM">4:00 PM</option>
+                    <option value="4:30 PM">4:30 PM</option>
+                    <option value="5:00 PM">5:00 PM</option>
+                    <option value="5:30 PM">5:30 PM</option>
+                    <option value="6:00 PM">6:00 PM</option>
+                    <option value="6:30 PM">6:30 PM</option>
+                    <option value="7:00 PM">7:00 PM</option>
+                    <option value="7:30 PM">7:30 PM</option>
+                    <option value="8:00 PM">8:00 PM</option>
+                    <option value="8:30 PM">8:30 PM</option>
+                    <option value="9:00 PM">9:00 PM</option>
+                </select>
+            </div>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <label for="room-select">Select Room:</label>
+                <select id="room-select">
+                    <option value="">Choose a room</option>
+                </select>
+                <br><br>
+                                <button id="select-room-btn" onclick="showRoomSelection()">Select Room</button>
+                                <button id="reserve-btn" onclick="reserveSelected()">Reserve Selected Room</button>
+                            <div id="room-selection" style="display:none; text-align: center; margin-top: 20px;">
+                                <label for="floor-select">Floor:</label>
+                                <select id="floor-select">
+                                    <option value="">Choose floor</option>
+                                </select>
+                                <br><br>
+                                <label for="room-num-select">Room:</label>
+                                <select id="room-num-select">
+                                    <option value="">Choose room</option>
+                                </select>
+                                <br><br>
+                                <button onclick="confirmRoomSelection()">Confirm</button>
+                                <button onclick="cancelRoomSelection()">Cancel</button>
+                            </div>
+                            </div>
+        </div>
+        <div id="confirm" class="tab-content">
+            <div class="confirmation">
+                <h2>Reservation Confirmed</h2>
+                <p id="confirm-details">No reservation yet.</p>
+                <p id="reserved-room">Reserved Room: Not set</p>
+                <p id="reserved-start">Start Time: Not set</p>
+                <p id="reserved-end">End Time: Not set</p>
+                <button onclick="cancelCurrentReservation()">Cancel Reservation</button>
+                <button onclick="showTab('select')">Back to Select</button>
+            </div>
+        </div>
+        <div id="view" class="tab-content">
+            <h2>All Reservations</h2>
+            <div id="reservations-list"></div>
+        </div>
+        <button onclick="window.location.href='USTP ROOM RESERVATION SYSTEM.html'">Back to Reservation System</button>
+        <button onclick="window.location.href='map.html'">View Map</button>
+        </div>
+        <div class="calendar">
+            <h2>Calendar</h2>
+            <div id="calendar-header"></div>
+            <table id="calendar-table"></table>
+            <div id="datetime"></div>
+        </div>
+    </div>
+    <script>
+        if (!localStorage.getItem('loggedIn')) {
+            window.location.href = 'login.html';
+        }
+
+        const translations = {
+            en: {
+                title: "Room Reservation",
+                selectRoom: "Select Room",
+                confirmation: "Confirmation",
+                viewReservations: "View Reservations",
+                confirmTitle: "Reservation Confirmed",
+                startTime: "Start Time:",
+                endTime: "End Time:",
+                chooseStart: "Choose start time",
+                chooseEnd: "Choose end time",
+                selectRoomLabel: "Select Room:",
+                chooseRoom: "Choose a room",
+                reserveBtn: "Reserve Selected Room",
+                reservationConfirmed: "Room {room} has been reserved successfully on {date} from {start} to {end}.",
+                noReservation: "No reservation yet.",
+                reservedRoom: "Reserved Room: {room}",
+                cancelReservation: "Cancel Reservation",
+                backToSelect: "Back to Select",
+                allReservations: "All Reservations",
+                noReservations: "No reservations.",
+                cancel: "Cancel",
+                backToSystem: "Back to Reservation System",
+                viewMap: "View Map",
+                selectRoomAlert: "Please select a room.",
+                selectTimesAlert: "Please select both start and end times.",
+                selectDateAlert: "Please select a date.",
+                startBeforeEnd: "Start time must be before end time.",
+                confirmReserve: "Reserve {room} on {date} from {start} to {end}?",
+                calendarTitle: "Calendar",
+                timeLabel: "Time:",
+                dateLabel: "Date:",
+                chooseDate: "Choose a date",
+                notSet: "Not set",
+                slotTaken: "That time range is already reserved for {room}.",
+                futureStart: "Start time must be in the future.",
+                days: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+            },
+            tl: {
+                title: "Pag-reserve ng Silid",
+                selectRoom: "Pumili ng Silid",
+                confirmation: "Kumpirmasyon",
+                viewReservations: "Tingnan ang Mga Reservation",
+                confirmTitle: "Nakumpirma ang Reservation",
+                startTime: "Oras ng Pagsisimula:",
+                endTime: "Oras ng Pagtatapos:",
+                chooseStart: "Pumili ng oras ng pagsisimula",
+                chooseEnd: "Pumili ng oras ng pagtatapos",
+                selectRoomLabel: "Pumili ng Silid:",
+                chooseRoom: "Pumili ng silid",
+                reserveBtn: "I-reserve ang Napiling Silid",
+                reservationConfirmed: "Ang silid {room} ay matagumpay na na-reserve noong {date} mula {start} hanggang {end}.",
+                noReservation: "Wala pang reservation.",
+                reservedRoom: "Na-reservang Silid: {room}",
+                cancelReservation: "Kanselahin ang Reservation",
+                backToSelect: "Bumalik sa Pumili",
+                allReservations: "Lahat ng Reservation",
+                noReservations: "Walang reservations.",
+                cancel: "Kanselahin",
+                backToSystem: "Bumalik sa Reservation System",
+                viewMap: "Tingnan ang Mapa",
+                selectRoomAlert: "Mangyaring pumili ng silid.",
+                selectTimesAlert: "Mangyaring pumili ng parehong oras ng pagsisimula at pagtatapos.",
+                selectDateAlert: "Mangyaring pumili ng petsa.",
+                startBeforeEnd: "Ang oras ng pagsisimula ay dapat bago ang oras ng pagtatapos.",
+                confirmReserve: "I-reserve ang {room} noong {date} mula {start} hanggang {end}?",
+                calendarTitle: "Kalendaryo",
+                timeLabel: "Oras:",
+                dateLabel: "Petsa:",
+                chooseDate: "Pumili ng petsa",
+                notSet: "Walang nakatakda",
+                slotTaken: "Naka-reserve na ang oras na iyon para sa {room}.",
+                futureStart: "Dapat nasa hinaharap ang oras ng pagsisimula.",
+                days: ['Lingo','Lunes','Martes','Miyerkules','Huwebes','Biyernes','Sabado']
+            },
+            ar: {
+                title: "حجز الغرفة",
+                selectRoom: "اختر الغرفة",
+                confirmation: "التأكيد",
+                viewReservations: "عرض الحجوزات",
+                confirmTitle: "تم تأكيد الحجز",
+                startTime: "وقت البدء:",
+                endTime: "وقت الانتهاء:",
+                chooseStart: "اختر وقت البدء",
+                chooseEnd: "اختر وقت الانتهاء",
+                selectRoomLabel: "اختر الغرفة:",
+                chooseRoom: "اختر غرفة",
+                reserveBtn: "احجز الغرفة المختارة",
+                reservationConfirmed: "تم حجز الغرفة {room} بنجاح بتاريخ {date} من {start} إلى {end}.",
+                noReservation: "لا توجد حجوزات بعد.",
+                reservedRoom: "الغرفة المحجوزة: {room}",
+                cancelReservation: "إلغاء الحجز",
+                backToSelect: "العودة إلى الاختيار",
+                allReservations: "جميع الحجوزات",
+                noReservations: "لا توجد حجوزات.",
+                cancel: "إلغاء",
+                backToSystem: "العودة إلى نظام الحجز",
+                viewMap: "عرض الخريطة",
+                selectRoomAlert: "يرجى اختيار غرفة.",
+                selectTimesAlert: "يرجى اختيار وقت البدء ووقت الانتهاء.",
+                selectDateAlert: "يرجى اختيار التاريخ.",
+                startBeforeEnd: "يجب أن يكون وقت البدء قبل وقت الانتهاء.",
+                confirmReserve: "هل تريد حجز {room} بتاريخ {date} من {start} إلى {end}؟",
+                calendarTitle: "التقويم",
+                timeLabel: "الوقت:",
+                dateLabel: "التاريخ:",
+                chooseDate: "اختر تاريخ",
+                notSet: "غير محدد",
+                slotTaken: "فترة الوقت هذه محجوزة بالفعل لـ {room}.",
+                futureStart: "يجب أن يكون وقت البدء في المستقبل.",
+                days: ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت']
+            }
+        };
+
+        const defaultBuildings = [
+            { id:2, name:"CEA", blg:"BUILDING 42-43", distance:"300m", desc:"scan qr or reserve manually", image:"CEA.jpg" },
+            { id:3, name:"CSM", blg:"BUILDING 28", distance:"90m", desc:"scan qr or reserve manually", image:"placeholder.svg" },
+            { id:4, name:"COT", blg:"BUILDING 47", distance:"500m", desc:"scan qr or reserve manually", image:"placeholder.svg" },
+            { id:5, name:"GYM", blg:"BUILDING 16", distance:"200m", desc:"scan qr or reserve manually", image:"placeholder.svg" },
+            { id:6, name:"LRC", blg:"BUILDING 23", distance:"120m", desc:"scan qr or reserve manually", image:"placeholder.svg" },
+            { id:7, name:"CON", blg:"NOT AVAILABLE", distance:"250m", desc:"scan qr or reserve manually", image:"placeholder.svg" },
+            { id:8, name:"COM", blg:"BUILDING 3", distance:"250m", desc:"scan qr or reserve manually", image:"placeholder.svg" },
+            { id:9, name:"DORM", blg:"BUILDING 51", distance:"250m", desc:"scan qr or reserve manually", image:"placeholder.svg" }
+        ];
+
+        let buildings = [];
+        let occupiedRooms = [];
+        let currentLang = localStorage.getItem('language') || 'en';
+        let currentRoomId = null;
+        let currentRoomName = null;
+        let currentStartTime = null;
+        let currentEndTime = null;
+        let currentDateISO = null;
+        let currentReservationId = null;
+
+        const languageSelect = document.getElementById('language-select');
+        const roomSelect = document.getElementById('room-select');
+        const reservationsList = document.getElementById('reservations-list');
+        const dateInput = document.getElementById('reservation-date');
+        const startSelect = document.getElementById('start-time');
+        const endSelect = document.getElementById('end-time');
+        const reserveBtn = document.getElementById('reserve-btn');
+        const confirmCancelBtn = document.querySelector('#confirm button:first-of-type');
+        const confirmBackBtn = document.querySelector('#confirm button:last-of-type');
+        const viewHeading = document.querySelector('#view h2');
+        const aboutBtn = document.querySelector('button[onclick="window.location.href=\'USTP ROOM RESERVATION SYSTEM.html\'"]');
+        const mapBtn = document.querySelector('button[onclick="window.location.href=\'map.html\'"]');
+
+        function pad(n){ return n<10 ? '0'+n : n; }
+        function todayISO(){
+            const d = new Date();
+            return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+        }
+        function getLocale(){ return currentLang === 'ar' ? 'ar' : 'en'; }
+
+        function loadBuildings(){
+            try {
+                const cached = JSON.parse(localStorage.getItem('buildings') || '[]');
+                if (Array.isArray(cached) && cached.length) {
+                    return cached;
+                }
+            } catch (err) {
+                console.warn('Invalid cached buildings', err);
+            }
+            localStorage.setItem('buildings', JSON.stringify(defaultBuildings));
+            return [...defaultBuildings];
+        }
+
+        function getBuildingName(id){
+            const building = buildings.find(b => b.id === id);
+            return building ? building.name : id;
+        }
+
+        function loadReservations(){
+            try {
+                const cached = JSON.parse(localStorage.getItem('occupiedRooms') || '[]');
+                if (!Array.isArray(cached)) return [];
+                return cached.map(res => ({
+                    id: res.id || generateReservationId(),
+                    room: res.room || null,
+                    roomName: res.roomName || getBuildingName(typeof res.room === 'number' ? res.room : Number(res.room)),
+                    startTime: res.startTime,
+                    endTime: res.endTime
+                })).filter(res => res.room && res.startTime && res.endTime);
+            } catch (err) {
+                console.warn('Invalid reservation cache', err);
+                return [];
+            }
+        }
+
+        function persistReservations(){
+            localStorage.setItem('occupiedRooms', JSON.stringify(occupiedRooms));
+            window.occupiedRooms = occupiedRooms;
+        }
+
+        function generateReservationId(){
+            if (window.crypto?.randomUUID) {
+                return crypto.randomUUID();
+            }
+            return 'res-' + Date.now().toString(36) + Math.random().toString(16).slice(2);
+        }
+
+        function updateRoomSelect(preservedValue){
+            const previousValue = preservedValue ?? roomSelect.value;
+            roomSelect.innerHTML = '';
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = translations[currentLang].chooseRoom;
+            roomSelect.appendChild(placeholder);
+            buildings.forEach(building => {
+                const option = document.createElement('option');
+                option.value = building.id;
+                option.textContent = `${building.name} (${building.blg})`;
+                roomSelect.appendChild(option);
+            });
+            /*
+            for(let f=1; f<=5; f++){
+                for(let r=1; r<=10; r++){
+                    const option = document.createElement('option');
+                    option.value = `Floor ${f}Room${r}`;
+                    option.textContent = `Floor ${f} Room ${r}`;
+                    roomSelect.appendChild(option);
+                }
+            }*/
+            if (previousValue && roomSelect.querySelector(`option[value="${previousValue}"]`)) {
+                roomSelect.value = previousValue;
+            }
+        }
+
+        function applyPresetRoom(){
+            const params = new URLSearchParams(window.location.search);
+            const preset = params.get('id');
+            if (preset && roomSelect.querySelector(`option[value="${preset}"]`)) {
+                roomSelect.value = preset;
+            }
+        }
+
+        function timeStringToHM(timeStr) {
+            const [time, period] = timeStr.split(' ');
+            const [hour, min] = time.split(':').map(Number);
+            let hour24 = hour;
+            if (period === 'PM' && hour !== 12) hour24 += 12;
+            if (period === 'AM' && hour === 12) hour24 = 0;
+            return {hour: hour24, min};
+        }
+
+        function parseDateTime(dateStr, timeStr) {
+            const [y,m,d] = dateStr.split('-').map(Number);
+            const hm = timeStringToHM(timeStr);
+            return new Date(y, m-1, d, hm.hour, hm.min, 0, 0);
+        }
+
+        function hasConflict(buildingId, startDate, endDate){
+            return occupiedRooms.some(res => {
+                if (res.room !== buildingId) return false;
+                const bookedStart = new Date(res.startTime);
+                const bookedEnd = new Date(res.endTime);
+                return startDate < bookedEnd && endDate > bookedStart;
+            });
+        }
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            const trigger = document.querySelector(`[onclick="showTab('${tab}')"]`);
+            if (trigger) {
+                trigger.classList.add('active');
+            }
+            if (tab === 'view') {
+                updateReservationsList();
+            }
+        }
+
+        function reserveSelected() {
+            const buildingId = Number(roomSelect.value);
+            if (!buildingId) {
+                alert(translations[currentLang].selectRoomAlert);
+                return;
+            }
+            const building = buildings.find(b => b.id === buildingId);
+            const dateVal = dateInput.value;
+            if (!dateVal) {
+                alert(translations[currentLang].selectDateAlert);
+                return;
+            }
+            const startTime = startSelect.value;
+            const endTimeStr = endSelect.value;
+            if (!startTime || !endTimeStr) {
+                alert(translations[currentLang].selectTimesAlert);
+                return;
+            }
+            const startDate = parseDateTime(dateVal, startTime);
+            const endDate = parseDateTime(dateVal, endTimeStr);
+            const now = new Date();
+            if (startDate <= now) {
+                alert(translations[currentLang].futureStart);
+                return;
+            }
+            if (startDate >= endDate) {
+                alert(translations[currentLang].startBeforeEnd);
+                return;
+            }
+            if (hasConflict(buildingId, startDate, endDate)) {
+                alert(translations[currentLang].slotTaken.replace('{room}', building?.name || getBuildingName(buildingId))); 
+                return;
+            }
+            const locale = getLocale();
+            const friendlyDate = startDate.toLocaleDateString(locale);
+            const promptText = translations[currentLang].confirmReserve
+                .replace('{room}', building?.name || getBuildingName(buildingId))
+                .replace('{date}', friendlyDate)
+                .replace('{start}', startTime)
+                .replace('{end}', endTimeStr);
+            if (!confirm(promptText)) {
+                return;
+            }
+            const reservation = {
+                id: generateReservationId(),
+                room: buildingId,
+                roomName: building?.name || getBuildingName(buildingId),
+                startTime: startDate.toISOString(),
+                endTime: endDate.toISOString()
+            };
+            occupiedRooms.push(reservation);
+            persistReservations();
+            currentReservationId = reservation.id;
+            currentRoomId = buildingId;
+            currentRoomName = reservation.roomName;
+            currentStartTime = startTime;
+            currentEndTime = endTimeStr;
+            currentDateISO = dateVal;
+            roomSelect.value = String(buildingId);
+            setLanguage(currentLang);
+            showTab('confirm');
+        }
+
+        function cancelReservationById(reservationId){
+            const idx = occupiedRooms.findIndex(res => res.id === reservationId);
+            if (idx === -1) return;
+            occupiedRooms.splice(idx, 1);
+            persistReservations();
+            if (currentReservationId === reservationId) {
+                resetCurrentReservationState();
+            }
+            updateReservationsList();
+        }
+
+        function cancelCurrentReservation() {
+            if (!currentReservationId) return;
+            cancelReservationById(currentReservationId);
+            updateRoomSelect();
+            setLanguage(currentLang);
+        }
+
+        function resetCurrentReservationState(){
+            currentReservationId = null;
+            currentRoomId = null;
+            currentRoomName = null;
+            currentStartTime = null;
+            currentEndTime = null;
+            currentDateISO = null;
+            refreshConfirmationCopy();
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('language', lang);
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            languageSelect.value = lang;
+            document.querySelector('h1').textContent = translations[lang].title;
+            const selectTab = document.querySelector('[onclick="showTab(\'select\')"]');
+            const confirmTab = document.querySelector('[onclick="showTab(\'confirm\')"]');
+            const viewTab = document.querySelector('[onclick="showTab(\'view\')"]');
+            if (selectTab) selectTab.textContent = translations[lang].selectRoom;
+            if (confirmTab) confirmTab.textContent = translations[lang].confirmation;
+            if (viewTab) viewTab.textContent = translations[lang].viewReservations;
+            document.querySelector('label[for="start-time"]').textContent = translations[lang].startTime;
+            document.querySelector('label[for="end-time"]').textContent = translations[lang].endTime;
+            startSelect.options[0].textContent = translations[lang].chooseStart;
+            endSelect.options[0].textContent = translations[lang].chooseEnd;
+            document.querySelector('label[for="room-select"]').textContent = translations[lang].selectRoomLabel;
+            document.querySelector('label[for="reservation-date"]').textContent = translations[lang].dateLabel;
+            dateInput.setAttribute('aria-label', translations[lang].chooseDate);
+            reserveBtn.textContent = translations[lang].reserveBtn;
+            document.querySelector('#confirm h2').textContent = translations[lang].confirmTitle;
+            if (confirmCancelBtn) confirmCancelBtn.textContent = translations[lang].cancelReservation;
+            if (confirmBackBtn) confirmBackBtn.textContent = translations[lang].backToSelect;
+            if (viewHeading) viewHeading.textContent = translations[lang].allReservations;
+            if (aboutBtn) aboutBtn.textContent = translations[lang].backToSystem;
+            if (mapBtn) mapBtn.textContent = translations[lang].viewMap;
+            document.querySelector('.calendar h2').textContent = translations[lang].calendarTitle;
+            updateRoomSelect();
+            refreshConfirmationCopy();
+            if (document.getElementById('view').classList.contains('active')) {
+                updateReservationsList();
+            }
+            buildCalendar();
+        }
+
+        function refreshConfirmationCopy(){
+            const locale = getLocale();
+            const friendlyDate = currentDateISO ? new Date(currentDateISO).toLocaleDateString(locale) : null;
+            const confirmDetails = document.getElementById('confirm-details');
+            if (currentReservationId) {
+                confirmDetails.textContent = translations[currentLang].reservationConfirmed
+                    .replace('{room}', currentRoomName || translations[currentLang].notSet)
+                    .replace('{date}', friendlyDate || translations[currentLang].notSet)
+                    .replace('{start}', currentStartTime || translations[currentLang].notSet)
+                    .replace('{end}', currentEndTime || translations[currentLang].notSet);
+            } else {
+                confirmDetails.textContent = translations[currentLang].noReservation;
+            }
+            document.getElementById('reserved-room').textContent = translations[currentLang].reservedRoom
+                .replace('{room}', currentRoomName || translations[currentLang].notSet);
+            const reservedStartEl = document.getElementById('reserved-start');
+            reservedStartEl.textContent = (currentStartTime && friendlyDate)
+                ? `${translations[currentLang].startTime} ${friendlyDate} ${currentStartTime}`
+                : `${translations[currentLang].startTime} ${translations[currentLang].notSet}`;
+            const reservedEndEl = document.getElementById('reserved-end');
+            reservedEndEl.textContent = (currentEndTime && friendlyDate)
+                ? `${translations[currentLang].endTime} ${friendlyDate} ${currentEndTime}`
+                : `${translations[currentLang].endTime} ${translations[currentLang].notSet}`;
+        }
+
+        function updateReservationsList() {
+            cleanupExpiredReservations();
+            reservationsList.innerHTML = '';
+            if (!occupiedRooms.length) {
+                reservationsList.textContent = translations[currentLang].noReservations;
+                return;
+            }
+            const locale = getLocale();
+            occupiedRooms
+                .slice()
+                .sort((a,b) => new Date(a.startTime) - new Date(b.startTime))
+                .forEach(res => {
+                    const div = document.createElement('div');
+                    div.style.marginBottom = '12px';
+                    const buildingName = res.roomName || getBuildingName(res.room);
+                    const startLabel = new Date(res.startTime).toLocaleString(locale);
+                    const endLabel = new Date(res.endTime).toLocaleString(locale);
+                    div.innerHTML = `<strong>${buildingName}</strong><br>Start: ${startLabel}<br>End: ${endLabel}`;
+                    if (new Date(res.startTime) > new Date()) {
+                        const btn = document.createElement('button');
+                        btn.textContent = translations[currentLang].cancel;
+                        btn.style.marginTop = '6px';
+                        btn.addEventListener('click', () => cancelReservationById(res.id));
+                        div.appendChild(btn);
+                    }
+                    reservationsList.appendChild(div);
+                });
+        }
+
+        function cleanupExpiredReservations() {
+            const now = new Date();
+            const fresh = occupiedRooms.filter(res => now < new Date(res.endTime));
+            if (fresh.length !== occupiedRooms.length) {
+                occupiedRooms = fresh;
+                persistReservations();
+            }
+        }
+
+        function buildCalendar() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = now.getDate();
+            const days = translations[currentLang].days;
+            const locale = getLocale();
+            const header = document.getElementById('calendar-header');
+            header.textContent = now.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+            let table = '<tr>';
+            days.forEach(day => { table += `<th>${day}</th>`; });
+            table += '</tr><tr>';
+            for (let i = 0; i < firstDay; i++) {
+                table += '<td></td>';
+            }
+            for (let day = 1; day <= daysInMonth; day++) {
+                if ((day + firstDay - 1) % 7 === 0 && day !== 1) {
+                    table += '</tr><tr>';
+                }
+                const className = day === today ? 'today' : '';
+                table += `<td class="${className}">${day}</td>`;
+            }
+            table += '</tr>';
+            document.getElementById('calendar-table').innerHTML = table;
+            document.getElementById('datetime').textContent = `${translations[currentLang].timeLabel} ${now.toLocaleTimeString(locale)}`;
+            document.querySelector('.calendar h2').textContent = translations[currentLang].calendarTitle;
+        }
+
+        function init(){
+            buildings = loadBuildings();
+            occupiedRooms = loadReservations();
+            window.occupiedRooms = occupiedRooms;
+            const min = todayISO();
+            dateInput.min = min;
+            if (!dateInput.value) {
+                dateInput.value = min;
+            }
+            setLanguage(currentLang);
+            populateFloorSelect();
+            populateRoomSelect();
+            document.getElementById('floor-select').addEventListener('change', populateRoomSelect);
+            applyPresetRoom();
+            cleanupExpiredReservations();
+            setInterval(() => {
+                cleanupExpiredReservations();
+                if (document.getElementById('view').classList.contains('active')) {
+                    updateReservationsList();
+                }
+            }, 60000);
+            buildCalendar();
+            setInterval(buildCalendar, 1000);
+            languageSelect.addEventListener('change', (event) => {
+                setLanguage(event.target.value);
+            });
+        }
+
+        function showRoomSelection(){
+            document.getElementById('room-selection').style.display = 'block';
+        }
+        function hideRoomSelection(){
+            document.getElementById('room-selection').style.display = 'none';
+        }
+        function populateFloorSelect(){
+            const floorSelect = document.getElementById('floor-select');
+            floorSelect.innerHTML = '<option value="">Choose floor</option>';
+            for(let i=1; i<=5; i++){
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `Floor ${i}`;
+                floorSelect.appendChild(option);
+            }
+        }
+        function populateRoomSelect(){
+            const roomSelect = document.getElementById('room-num-select');
+            roomSelect.innerHTML = '<option value="">Choose room</option>';
+            for(let i=1; i<=10; i++){
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `Room ${i}`;
+                roomSelect.appendChild(option);
+            }
+        }
+        function confirmRoomSelection(){
+            const floor = document.getElementById('floor-select').value;
+            const room = document.getElementById('room-num-select').value;
+            if(!floor || !room){
+                alert('Please select floor and room');
+                return;
+            }
+            const roomValue = `Floor${floor}Room${room}`;
+            document.getElementById('room-select').value = roomValue;
+            hideRoomSelection();
+        }
+        function cancelRoomSelection(){
+            hideRoomSelection();
+        }
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
+

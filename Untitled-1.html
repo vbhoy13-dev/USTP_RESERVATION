@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Classroom Reservation System</title>
+
+    <!-- LINK TO CSS -->
+    <link rel="stylesheet" href="ustproomreservation.css">
+</head>
+
+<body>
+
+<header>
+    <h1>Classroom Reservation System</h1>
+    <p>Reserve room on time</p>
+</header>
+
+<nav>
+    <a href="#reserve">Rooms</a>
+    <a href="#navigation">Navigation</a>
+    <a href="#about">About</a>
+</nav>
+
+<div class="container" id="stalls">
+    <h2 class="section-title">Available Food Stalls</h2>
+
+    <div class="stall-grid">
+
+        <!-- STALL 1 -->
+        <div class="stall-card">
+            <div class="stall-img-placeholder">Image Placeholder</div>
+            <h3>Cafeteria</h3>
+            <p> Meal & Snacks</p>
+            <p>Location: BLDG. 20</p>
+            <a href="stall1.html" class="stall-btn">View</a>
+        </div>
+
+        <!-- STALL 2 -->
+        <div class="stall-card">
+            <div class="stall-img-placeholder">Image Placeholder</div>
+            <h3>Student Lounge</h3>
+            <p> Snacks</p>
+            <p>Location: Near BLDG. 18</p>
+            <a href="stall2.html" class="stall-btn">View</a>
+        </div>
+
+        <!-- STALL 3 -->
+        <div class="stall-card">
+            <div class="stall-img-placeholder">Image Placeholder</div>
+            <h3>Learning Resources Center</h3>
+            <p> Meal & Snacks</p>
+            <p>Location: BLDG. 23</p>
+            <a href="stall3.html" class="stall-btn">View</a>
+        </div>
+
+        <!-- STALL 4 -->
+        <div class="stall-card">
+            <div class="stall-img-placeholder">Image Placeholder</div>
+            <h3>Science Complex</h3>
+            <p> Meal & Snacks</p>
+            <p>Location: BLDG. 41</p>
+            <a href="stall4.html" class="stall-btn">View</a>
+        </div>
+
+    </div>
+</div>
+
+<div class="container" id="navigation">
+    <h2 class="section-title">Navigation Map</h2>
+    <div class="map">
+        <img src="Map.jpg" alt="Navigation Map">
+    </div>
+</div>
+
+<div class="container" id="about">          
+    <h2 class="section-title">About the System</h2>
+    <p>
+        This web-based platform helps users locate food stalls,
+        browse menus, and navigate the area efficiently.
+    </p>
+</div>
+
+<footer>
+    <p>© 2025 Food Stall Navigation System. All Rights Reserved.</p>
+</footer>
+
+</body>
+</html>
+Estephen
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+    .map-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.map-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.map {
+    width: 100%;
+    max-width: 1000px;   /* wider container */
+    background: #f0f0f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    padding: 10px;       /* space around image */
+}
+
+.map img {
+    width: 100%;
+    height: auto;        /* ✅ key fix */
+    display: block;
+}
+
+
+
+</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Food Stall Information & Navigation System</title>
+
+    <link rel="stylesheet" href="stall1.css">
+</head>
+
+<body>
+
+<header>
+    <a href="website.html" class="stall-btn">Back</a>
+    <h1>Cafeteria</h1>
+</header>
+
+<nav>
+    <a href="#navigation">Map</a>
+    <a href="#stalls">Available Food </a>
+
+</nav>
+
+<!-- NAVIGATION SECTION (TOP) -->
+<div class="container" id="navigation">
+    <h2 class="section-title">Navigation Map</h2>
+
+    <div class="map-wrapper">
+        <div class="map">
+            <img src="stall1.jpg" alt="Navigation Map">
+        </div>
+    </div>
+</div>
+
+<!-- FOOD STALLS -->
+<div class="container" id="stalls">
+    <h2 class="section-title">Available Food</h2>
+
+    <div class="stall-grid">
+
+        <div class="stall-card">
+            <div class="stall-img-placeholder">Image Placeholder</div>
+            <h3>Milk tea</h3>
+            <p>Price: 100Php</p>
+           
+        </div>
+
+        <div class="stall-card">
+            <div class="stall-img-placeholder">Image Placeholder</div>
+            <h3>Lounge</h3>
+            <p>Price: Milk tea, fruit shakes</p>
+           
+        
+        </div>
+
+        <div class="stall-card">
+            <div class="stall-img-placeholder">Image Placeholder</div>
+            <h3>Lounge</h3>
+            <p>Price: Milk tea, fruit shakes</p>
+           
+          
+       
+        </div>
+
+    </div>
+</div>
+
+
+<footer>
+    <p>© 2025 Food Stall Navigation System. All Rights Reserved.</p>
+</footer>
+
+</body>
+</html>

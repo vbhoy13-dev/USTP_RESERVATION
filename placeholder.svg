@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300" role="img" aria-label="Placeholder building image">
+    <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1d3557" />
+            <stop offset="100%" stop-color="#274c77" />
+        </linearGradient>
+    </defs>
+    <rect width="400" height="300" fill="url(#grad)" rx="24" ry="24" />
+    <g fill="none" stroke="#FFD700" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="60" y="90" width="280" height="150" rx="12" />
+        <path d="M60 140h280" />
+        <path d="M60 190h280" />
+        <path d="M140 90v150" />
+        <path d="M220 90v150" />
+        <path d="M300 90v150" />
+    </g>
+    <text x="200" y="70" text-anchor="middle" fill="#FFFFFF" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="600">USTP</text>
+    <text x="200" y="270" text-anchor="middle" fill="#E0E0E0" font-family="Segoe UI, Arial, sans-serif" font-size="18">Campus Facility</text>
+</svg>

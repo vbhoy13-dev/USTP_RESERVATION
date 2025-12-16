@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>USTP ROOM RESERVATION SYSTEM</title>
+    <style>
+        /* To use an image per-card, set an inline CSS variable on the .media element:
+           <div class="media" style="--media-img: url('path/to/image.jpg')">...</div>
+           If no image is provided the gradient fallback will be used. */
+        :root{--bg:#f6f7fb;--card:#fff;--accent:#ff6b35;--muted:#6b7280}
+        body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:0;background:var(--bg);color:#111}
+        header{padding:20px 24px;background:linear-gradient(90deg,#fff 0%,#f9fafb 100%);display:flex;gap:12px;align-items:center;justify-content:space-between;box-shadow:0 1px 0 rgba(0,0,0,.04)}
+        h1{font-size:18px;margin:0}
+        .controls{display:flex;gap:8px;align-items:center}
+        input,select{padding:8px 10px;border:1px solid #e6e9ef;border-radius:8px;background:#fff}
+        main{padding:20px 24px;max-width:1100px;margin:0 auto}
+        .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+        .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 6px 16px rgba(31,41,55,.06);display:flex;flex-direction:column;gap:12px}
+        /* media now supports an image via --media-img; fallback is the previous gradient */
+        .media{
+            height:120px;border-radius:8px;
+            display:flex;align-items:flex-end;padding:10px;color:#fff;font-weight:600;
+            background-image: var(--media-img, linear-gradient(135deg,#ffd29f,#ff6b35));
+            background-size:cover;background-position:center;
+            position:relative;overflow:hidden;
+        }
+        /* subtle dark overlay so white text remains readable on photos */
+        .media::before{
+            content:"";position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0.08));pointer-events:none;border-radius:8px;
+        }
+        .media > *{position:relative;z-index:1} /* keep text above overlay */
+        .meta{display:flex;justify-content:space-between;align-items:center;gap:8px}
+        .title{font-size:16px;margin:0}
+        .badges{display:flex;gap:6px;align-items:center}
+        .badge{font-size:12px;padding:6px 8px;border-radius:999px;background:#eef2ff;color:#3730a3}
+        .avail{background:#ecfdf5;color:#027a48}
+        p.desc{margin:0;color:var(--muted);font-size:13px}
+        .row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+        button{border:0;padding:10px 12px;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+        button:disabled{opacity:.5;cursor:default;background:#c4c4c4}
+        .small{font-size:13px;color:var(--muted)}
+        footer{padding:16px;text-align:center;color:var(--muted);font-size:13px}
+        @media (max-width:420px){header{flex-direction:column;align-items:start;gap:12px}}
+    </style>
+</head>
+<body>
+    <header>
+        <h1>USTP ROOM RESERVATION SYSTEM</h1>
+        <div class="controls" role="search">
+            <input id="q" type="search" placeholder="Search room" aria-label="Search building name or description"/>
+            <select id="filter">
+                <option value="">All Buildings</option>
+            </select>
+            <button id="clear">Clear</button>
+        </div>
+    </header>
+
+    <main>
+        <div id="list" class="grid" aria-live="polite"></div>
+        <footer id="empty" style="display:none">No Buildings found.</footer>
+    </main>
+
+    <script>
+        // sample data
+        const stalls = [
+            { id:1, name:"CITC", price:"Distance", room:"Distance", distance:"150m", available:true, desc:"scan qr or reserve manually", blg:"BUILDING 9" },
+            { id:2, name:"CEA", price:"Distance", room:"Distance", distance:"300m", available:true, desc:"scan qr or reserve manually", blg:"BUILDING 42-43" },
+            { id:3, name:"CSM", price:"Distance", room:"Distance", distance:"90m", available:true, desc:"scan qr or reserve manually", blg:"BUILDING 28" },
+            { id:4, name:"COT", price:"Distance", room:"Distance", distance:"500m", available:false, desc:"scan qr or reserve manually", blg:"BUILDING 47" },
+            { id:5, name:"GYM", price:"Distance", room:"Distance", distance:"200m", available:true, desc:"Sweet and savory crepes.", blg:"BUILDING 16" },
+            { id:6, name:"LRC", price:"Distance", room:"Distance", distance:"120m", available:true, desc:"scan qr or reserve manually", blg:"BUILDING 23" },
+            { id:7, name:"CON", price:"Distance", room:"Distance", distance:"250m", available:false, desc:"scan qr or reserve manually", blg:"NOT AVAILABLE" },
+            { id:8, name:"COM", price:"Distance", room:"Distance", distance:"250m", available:true, desc:"scan qr or reserve manually", blg:"BUILDING 3" },
+            { id:9, name:"DORM", price:"Distance", room:"Distance", distance:"250m", available:true, desc:"scan qr or reserve manually", blg:"BUILDING 51" }
+        ];
+
+        const qEl = document.getElementById('q');
+        const filterEl = document.getElementById('filter');
+        const listEl = document.getElementById('list');
+        const emptyEl = document.getElementById('empty');
+        const clearBtn = document.getElementById('clear');
+
+        // populate blg filter
+        const blg = Array.from(new Set(stalls.map(s=>s.blg))).sort();
+        blg.forEach(c=>{
+            const opt = document.createElement('option'); opt.value=c; opt.textContent=c; filterEl.appendChild(opt);
+        });
+
+        function render(items){
+            listEl.innerHTML = '';
+            if(!items.length){ emptyEl.style.display='block'; return; }
+            emptyEl.style.display='none';
+            for(const s of items){
+                const card = document.createElement('article'); card.className='card';
+                card.innerHTML = `
+                    <div class="media" aria-hidden="true">${s.blg}</div>
+                    <div class="meta">
+                        <div>
+                            <h2 class="title">${escapeHtml(s.name)}</h2>
+                            <div class="small">${escapeHtml(s.price)} • ${escapeHtml(s.distance)}</div>
+                        </div>
+                        <div class="badges">
+                            <span class="badge ${s.available? 'avail':''}">${s.available? 'Available':'Closed'}</span>
+                        </div>
+                    </div>
+                    <p class="desc">${escapeHtml(s.desc)}</p>
+                    <div class="row">
+                        <button ${s.available? '':'disabled'} data-id="${s.id}">${s.available ? 'Reserve' : 'Unavailable'}</button>
+                        <div class="small">${escapeHtml(s.blg)}</div>
+                    </div>
+                `;
+                listEl.appendChild(card);
+            }
+        }
+
+        // basic escaping
+        function escapeHtml(str){ return String(str).replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m]); }
+
+        function applyFilters(){
+            const q = qEl.value.trim().toLowerCase();
+            const selectedBlg = filterEl.value;
+            const filtered = stalls.filter(s=>{
+                const matchQ = !q || (s.name + ' ' + s.blg + ' ' + s.desc).toLowerCase().includes(q);
+                const matchblg = !selectedBlg || s.blg === selectedBlg;
+                return matchQ && matchblg;
+            });
+            render(filtered);
+        }
+
+        // events
+        qEl.addEventListener('input', ()=> applyFilters());
+        filterEl.addEventListener('change', ()=> applyFilters());
+        clearBtn.addEventListener('click', ()=> { qEl.value=''; filterEl.value=''; applyFilters(); });
+
+        // delegate reserve clicks
+        listEl.addEventListener('click', (ev)=>{
+            const btn = ev.target.closest('button[data-id]');
+            if(!btn) return;
+            const id = Number(btn.dataset.id);
+            const building = stalls.find(s=>s.id===id);
+            if(!building || !building.available) return;
+            // simple confirmation + mark unavailable
+            if(confirm(`Reserve a spot at ${building.name}?`)){
+                building.available = false;
+                applyFilters();
+                alert('Reserved.');
+            }
+        });
+
+        // initial
+        applyFilters();
+    </script>
+</body>
+</html>

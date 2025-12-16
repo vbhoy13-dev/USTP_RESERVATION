@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>About Us - USTP ROOM RESERVATION SYSTEM</title>
+    <style>
+        :root{--bg:#001122;--card:#002244;--accent:#FFD700;--muted:#CCCCCC}
+        body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:0;background:var(--bg);color:#FFFFFF;padding:20px;max-width:800px;margin:0 auto}
+        h1{text-align:center;margin-bottom:20px}
+        p{line-height:1.6;margin-bottom:15px}
+        .card{background:var(--card);border-radius:12px;padding:20px;margin:20px 0}
+        button{border:0;padding:10px 12px;border-radius:8px;background:var(--accent);color:#000;cursor:pointer;display:block;margin:20px auto}
+    </style>
+</head>
+<body>
+    <select id="language-select" style="position:absolute; top:10px; right:10px;">
+        <option value="en">English</option>
+        <option value="tl">Tagalog</option>
+        <option value="ar">Arabic</option>
+    </select>
+    <h1>About USTP Room Reservation System</h1>
+    <div class="card">
+        <p>The USTP Room Reservation System is designed to facilitate easy and efficient booking of rooms and facilities at the University of Science and Technology of Southern Philippines (USTP).</p>
+        <p>Our system allows students, faculty, and staff to view available rooms, check distances, and reserve spots seamlessly.</p>
+        <p>For more information, contact the USTP administration.</p>
+        <img src="logo.png" alt="USTP Logo" style="display:block; margin:20px auto; max-width:150px; height:auto;">
+    </div>
+    <button onclick="window.location.href='USTP ROOM RESERVATION SYSTEM.html'">Return to Main Page</button>
+    <script>
+        const translations = {
+            en: {
+                title: "About USTP Room Reservation System",
+                desc1: "The USTP Room Reservation System is designed to facilitate easy and efficient booking of rooms and facilities at the University of Science and Technology of Southern Philippines (USTP).",
+                desc2: "Our system allows students, faculty, and staff to view available rooms, check distances, and reserve spots seamlessly.",
+                desc3: "For more information, contact the USTP administration.",
+                returnBtn: "Return to Main Page"
+            },
+            tl: {
+                title: "Tungkol sa USTP Room Reservation System",
+                desc1: "Ang USTP Room Reservation System ay dinisenyo upang mapadali ang madali at mahusay na pag-book ng mga silid at pasilidad sa University of Science and Technology of Southern Philippines (USTP).",
+                desc2: "Ang aming sistema ay nagbibigay-daan sa mga estudyante, faculty, at staff na tingnan ang mga available na silid, suriin ang distansya, at mag-reserve ng mga spot nang walang putol.",
+                desc3: "Para sa karagdagang impormasyon, makipag-ugnayan sa USTP administration.",
+                returnBtn: "Bumalik sa Main Page"
+            },
+            ar: {
+                title: "حول نظام حجز غرف USTP",
+                desc1: "تم تصميم نظام حجز غرف USTP لتسهيل الحجز السهل والفعال للغرف والمرافق في جامعة العلوم والتكنولوجيا في جنوب الفلبين (USTP).",
+                desc2: "يسمح نظامنا للطلاب والأساتذة والموظفين بعرض الغرف المتاحة، التحقق من المسافات، وحجز الأماكن بسلاسة.",
+                desc3: "للمزيد من المعلومات، اتصل بإدارة USTP.",
+                returnBtn: "العودة إلى الصفحة الرئيسية"
+            }
+        };
+
+        let currentLang = localStorage.getItem('language') || 'en';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('language', lang);
+            document.documentElement.lang = lang;
+            if (lang === 'ar') {
+                document.documentElement.dir = 'rtl';
+            } else {
+                document.documentElement.dir = 'ltr';
+            }
+            document.querySelector('h1').textContent = translations[lang].title;
+            const ps = document.querySelectorAll('.card p');
+            ps[0].textContent = translations[lang].desc1;
+            ps[1].textContent = translations[lang].desc2;
+            ps[2].textContent = translations[lang].desc3;
+            document.querySelector('button').textContent = translations[lang].returnBtn;
+        }
+
+        setLanguage(currentLang);
+        document.getElementById('language-select').value = currentLang;
+
+        document.getElementById('language-select').addEventListener('change', (e) => {
+            setLanguage(e.target.value);
+        });
+    </script>
+</body>
+</html>

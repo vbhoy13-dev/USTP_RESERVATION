@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>USTP ROOM RESERVATION SYSTEM</title>
+    <meta name="description" content="Plan, search, and reserve USTP CDO rooms with live availability, building filters, and interactive tools." />
+    <meta name="keywords" content="USTP, room reservation, CDO, campus map, building availability" />
+    <meta name="robots" content="index,follow" />
+    <link rel="canonical" href="https://ustp-room-reservation-system.example.com/" />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="sitemap.xml" />
+    <meta property="og:title" content="USTP CDO Room Reservation System" />
+    <meta property="og:description" content="Quickly locate campus buildings and reserve an available room in seconds." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ustp-room-reservation-system.example.com/" />
+    <meta property="og:image" content="https://ustp-room-reservation-system.example.com/logo.png" />
+    <style>
+        :root{--bg:#001122;--card:#002244;--accent:#FFD700;--muted:#CCCCCC}
+        body{font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;margin:0;background:var(--bg);color:#FFFFFF}
+        .skip-link{position:absolute;left:24px;top:-48px;padding:8px 14px;border-radius:8px;background:var(--accent);color:#000000;font-weight:600;text-decoration:none;transition:top .2s ease,box-shadow .2s ease;z-index:20}
+        .skip-link:focus{top:20px;box-shadow:0 4px 10px rgba(0,0,0,0.2)}
+        header{padding:20px 24px;background:linear-gradient(90deg,#001122 0%,#002244 100%);display:flex;gap:12px;align-items:center;justify-content:space-between;box-shadow:0 1px 0 rgba(0,0,0,.04);position:sticky;top:0;z-index:10}
+        h1{font-size:18px;margin:0;display:flex;align-items:center}
+        h1 img{transition:transform 0.3s ease}
+        h1 img:hover{transform:scale(1.05)}
+        .controls{display:flex;gap:8px;align-items:center}
+        .controls button{background:#FFFFFF;color:#000000}
+        input,select{padding:8px 10px;border:1px solid #e6e9ef;border-radius:8px;background:var(--card);color:#FFFFFF}
+        main{padding:20px 24px;max-width:1100px;margin:0 auto}
+        .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+        .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 6px 16px rgba(31,41,55,.06);display:flex;flex-direction:column;gap:12px}
+        .media{height:120px;border-radius:8px;overflow:hidden}
+        .meta{display:flex;justify-content:space-between;align-items:center;gap:8px}
+        .title{font-size:16px;margin:0}
+        .badges{display:flex;gap:6px;align-items:center}
+        .badge{font-size:12px;padding:6px 8px;border-radius:999px;background:var(--accent);color:#000000}
+        .avail{background:#ecfdf5;color:#027a48}
+        p.desc{margin:0;color:var(--muted);font-size:13px}
+        .row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+        button{border:0;padding:10px 12px;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+        button:disabled{opacity:.5;cursor:default;background:#666666}
+        .card a{text-decoration:none;color:#fff;background:var(--accent);padding:10px 12px;border-radius:8px;display:inline-block;cursor:pointer}
+        .card a[style*="pointer-events:none"]{opacity:.5;cursor:default;background:#666666}
+        .small{font-size:13px;color:var(--muted)}
+        footer{padding:16px;text-align:center;color:var(--muted);font-size:13px}
+        .media img, .card a{transition:transform 0.3s ease}
+        .media img:hover, .card a:hover{transform:scale(1.05)}
+        @media (max-width:420px){header{flex-direction:column;align-items:start;gap:12px}}
+    </style>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "USTP CDO Room Reservation System",
+        "url": "https://ustp-room-reservation-system.example.com/"
+    }
+    </script>
+</head>
+<body>
+    <a class="skip-link" href="#list">Skip to building list</a>
+    <header>
+        <h1><img src="logo.png" alt="USTP Logo" style="width:40px; height:40px; margin-right:10px; border-radius:50%;">USTP CDO ROOM<br>RESERVATION SYSTEM</h1>
+        <div class="controls" role="search">
+            <input id="q" type="search" placeholder="Search room" aria-label="Search building name or description"/>
+            <select id="filter">
+                <option value="">All Buildings</option>
+            </select>
+            <button id="clear">Clear</button>
+            <button id="theme-toggle-btn">Toggle Theme</button>
+            <button id="map">Map View</button>
+            <button id="about">About Us</button>
+            <button id="logout">Logout</button>
+        </div>
+    </header>
+
+    <main>
+        <div id="list" class="grid" aria-live="polite"></div>
+        <footer id="empty" style="display:none">No Buildings found.</footer>
+    </main>
+
+    <script >
+        if (!localStorage.getItem('loggedIn')) {
+            window.location.href = 'login.html';
+        }
+
+        const themes = {
+            dark: { bg: '#001122', card: '#002244', accent: '#FFD700', muted: '#CCCCCC' },
+            light: { bg: '#d0e0f0', card: '#fff', accent: '#FFD700', muted: '#6b7280' }
+        };
+
+        function applyTheme(theme) {
+            const root = document.documentElement;
+            root.style.setProperty('--bg', themes[theme].bg);
+            root.style.setProperty('--card', themes[theme].card);
+            root.style.setProperty('--accent', themes[theme].accent);
+            root.style.setProperty('--muted', themes[theme].muted);
+            document.body.style.color = theme === 'dark' ? '#FFFFFF' : '#111';
+            document.querySelector('header').style.background = theme === 'dark' ? 'linear-gradient(90deg,#001122 0%,#002244 100%)' : 'linear-gradient(90deg,#d0e0f0 0%,#e0f0ff 100%)';
+            document.querySelectorAll('input,select').forEach(el => {
+                el.style.background = themes[theme].card;
+                el.style.color = theme === 'dark' ? '#FFFFFF' : '#000000';
+            });
+            document.querySelectorAll('.badge').forEach(el => {
+                el.style.background = themes[theme].accent;
+                el.style.color = theme === 'dark' ? '#000000' : '#3730a3';
+            });
+            document.querySelectorAll('.badge.avail').forEach(el => {
+                el.style.background = theme === 'dark' ? '#ecfdf5' : '#d1fae5';
+                el.style.color = theme === 'dark' ? '#027a48' : '#065f46';
+            });
+            document.querySelectorAll('button:not(#settings)').forEach(el => {
+                el.style.background = themes[theme].accent;
+                el.style.color = theme === 'dark' ? '#000000' : '#fff';
+            });
+            document.querySelectorAll('button:disabled, .card a[style*="pointer-events:none"]').forEach(el => el.style.background = '#666666');
+            document.querySelector('footer').style.color = themes[theme].muted;
+            localStorage.setItem('theme', theme);
+        }
+
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        applyTheme(currentTheme);
+
+        const placeholderImage = 'placeholder.svg';
+        // sample data
+        const stalls = [
+            { id:1, name:"CITC", price:"Distance", room:"Distance", distance:"150m", available:true, desc:"scan qr or reserve manually", blg:"BUILDING 9", image:"CITC.jpg" },
+            { id:2, name:"CEA", price:"Distance", room:"Distance", distance:"300m", available:true, desc:"scan qr or reserve manually", blg:"BUILDING 42-43", image:"CEA.jpg" },
+            { id:3, name:"CSM", price:"Distance", room:"Distance", distance:"90m", available:true, desc:"scan qr or reserve manually", blg:"BUILDING 28", image:"CSM.jpg" },
+            { id:4, name:"COT", price:"Distance", room:"Distance", distance:"500m", available:true, desc:"scan qr or reserve manually", blg:"BUILDING 47", image:placeholderImage },
+            { id:5, name:"GYM", price:"Distance", room:"Distance", distance:"200m", available:true, desc:"scan qr or reserve manually", blg:"BUILDING 16", image:placeholderImage },
+            { id:6, name:"LRC", price:"Distance", room:"Distance", distance:"120m", available:true, desc:"scan qr or reserve manually", blg:"BUILDING 23", image:placeholderImage },
+            { id:7, name:"CON", price:"Distance", room:"Distance", distance:"250m", available:false, desc:"scan qr or reserve manually", blg:"NOT AVAILABLE", image:placeholderImage },
+            { id:8, name:"COM", price:"Distance", room:"Distance", distance:"250m", available:true, desc:"scan qr or reserve manually", blg:"BUILDING 3", image:placeholderImage },
+            { id:9, name:"DORM", price:"Distance", room:"Distance", distance:"250m", available:true, desc:"scan qr or reserve manually", blg:"BUILDING 51", image:placeholderImage }
+        ];
+
+        try {
+            localStorage.setItem('buildings', JSON.stringify(stalls));
+        } catch (err) {
+            console.warn('Unable to persist buildings list', err);
+        }
+
+        const qEl = document.getElementById('q');
+        const filterEl = document.getElementById('filter');
+        const listEl = document.getElementById('list');
+        const emptyEl = document.getElementById('empty');
+        const clearBtn = document.getElementById('clear');
+
+        // populate blg filter
+        const blg = Array.from(new Set(stalls.map(s=>s.blg))).sort();
+        blg.forEach(c=>{
+            const opt = document.createElement('option'); opt.value=c; opt.textContent=c; filterEl.appendChild(opt);
+        });
+
+        function render(items){
+            listEl.innerHTML = '';
+            if(!items.length){ emptyEl.style.display='block'; return; }
+            emptyEl.style.display='none';
+            for(const s of items){
+                const card = document.createElement('article'); card.className='card';
+                const imageSrc = escapeHtml((s.image && s.image.trim()) ? s.image : placeholderImage);
+                const title = escapeHtml(s.name);
+                card.innerHTML = `
+                    <div class="media" aria-hidden="true"><img src="${imageSrc}" alt="${title}" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src='${placeholderImage}';"></div>
+                    <div class="meta">
+                        <div>
+                            <h2 class="title">${title}</h2>
+                            <div class="small">${escapeHtml(s.price)} • ${escapeHtml(s.distance)}</div>
+                        </div>
+                        <div class="badges">
+                            <span class="badge ${s.available? 'avail':''}">${s.available? 'Available':'Occupied'}</span>
+                        </div>
+                    </div>
+                    <p class="desc">${escapeHtml(s.desc)}</p>
+                    <div class="row">
+                        <a href="room_reservation.html?id=${s.id}" data-id="${s.id}" ${s.available ? '' : 'style="pointer-events:none; opacity:0.5;"'}>${s.available ? 'Reserve' : 'Occupied'}</a>
+                        <div class="small">${escapeHtml(s.blg)}</div>
+                    </div>
+                `;
+                listEl.appendChild(card);
+            }
+        }
+
+        // basic escaping
+        function escapeHtml(str){ return String(str).replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m]); }
+
+        function updateURLQuery(){
+            const params = new URLSearchParams(window.location.search);
+            const query = qEl.value.trim();
+            if(query){ params.set('q', query); } else { params.delete('q'); }
+            if(filterEl.value){ params.set('blg', filterEl.value); } else { params.delete('blg'); }
+            const qs = params.toString();
+            const newUrl = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+            window.history.replaceState(null, '', newUrl);
+        }
+
+        function applyFilters(){
+            const q = qEl.value.trim().toLowerCase();
+            const selectedBlg = filterEl.value;
+            const filtered = stalls.filter(s=>{
+                const matchQ = !q || (s.name + ' ' + s.blg + ' ' + s.desc).toLowerCase().includes(q);
+                const matchblg = !selectedBlg || s.blg === selectedBlg;
+                return matchQ && matchblg;
+            });
+            render(filtered);
+        }
+
+        function applyFiltersFromURL(){
+            const params = new URLSearchParams(window.location.search);
+            const presetQ = params.get('q') || '';
+            const presetBlg = params.get('blg') || '';
+            if(presetQ){ qEl.value = presetQ; }
+            if(presetBlg && Array.from(filterEl.options).some(opt => opt.value === presetBlg)){
+                filterEl.value = presetBlg;
+            }
+            applyFilters();
+        }
+
+        // events
+        qEl.addEventListener('input', ()=> { applyFilters(); updateURLQuery(); });
+        filterEl.addEventListener('change', ()=> { applyFilters(); updateURLQuery(); });
+        clearBtn.addEventListener('click', ()=> { qEl.value=''; filterEl.value=''; applyFilters(); updateURLQuery(); });
+        document.getElementById('logout').addEventListener('click', () => {
+            localStorage.removeItem('loggedIn');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        });
+
+        document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(currentTheme);
+        });
+
+        document.getElementById('map').addEventListener('click', () => {
+            window.location.href = 'map.html';
+        });
+
+        document.getElementById('about').addEventListener('click', () => {
+            window.location.href = 'about.html';
+        });
+
+        // delegate reserve clicks
+        listEl.addEventListener('click', (ev)=>{
+            const link = ev.target.closest('a[data-id]');
+            if(!link) return;
+            ev.preventDefault();
+            const id = Number(link.dataset.id);
+            const building = stalls.find(s=>s.id===id);
+            if(!building || !building.available) return;
+            // simple confirmation + mark unavailable
+            if(confirm(`Reserve a spot at ${building.name}?`)){
+                building.available = false;
+                applyFilters();
+                alert('Reserved.');
+                window.location.href = 'room_reservation.html?id=' + id;
+            }
+        });
+
+        // initial
+        applyFiltersFromURL();
+    </script>
+</body>
+</html>
+
